@@ -41,7 +41,7 @@ ENV DJANGO_SETTINGS_MODULE=modular_project.settings
 RUN python manage.py collectstatic --noinput
 
 # Expose the port Cloud Run uses (8080)
-EXPOSE 8080
+EXPOSE 8000
 
 # Use Gunicorn to serve the Django application.
-CMD ["gunicorn", "modular_project.wsgi:application", "--bind", "0.0.0.0:8080", "--workers", "3"]
+CMD ["sh", "-c", "exec gunicorn modular_project.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 3"]
