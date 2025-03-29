@@ -1,0 +1,24 @@
+{% extends 'engine/base.html' %}
+{% block content %}
+{% if action == 'create' %}
+    <h2>Create New Product</h2>
+{% else %}
+    <h2>Update Product</h2>
+{% endif %}
+<form method="POST" onsubmit="return confirm('Are you sure to proceed?');">
+    {% csrf_token %}
+    <label for="name">Name:</label>
+    <input type="text" name="name" id="name" value="{{ product.name|default:'' }}" required><br><br>
+    
+    <label for="barcode">Barcode:</label>
+    <input type="text" name="barcode" id="barcode" value="{{ product.barcode|default:'' }}" required><br><br>
+    
+    <label for="price">Price:</label>
+    <input type="number" step="0.01" name="price" id="price" value="{{ product.price|default:'' }}" required><br><br>
+    
+    <label for="stock">Stock:</label>
+    <input type="number" name="stock" id="stock" value="{{ product.stock|default:'' }}" required><br><br>
+    
+    <button class="btn btn-primary" type="submit">Submit</button>
+</form>
+{% endblock %}

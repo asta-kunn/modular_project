@@ -1,0 +1,10 @@
+{% extends 'engine/base.html' %}
+{% block content %}
+<h2>Product Module Landing Page</h2>
+<p>Welcome to the Product Module.</p>
+<p>
+    <a class="btn btn-info" href="{% url 'product_module:product_list' module.slug %}">
+        View Products
+    </a>
+</p>
+{% endblock %}

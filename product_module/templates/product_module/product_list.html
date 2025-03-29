@@ -1,0 +1,44 @@
+{% extends 'engine/base.html' %}
+{% block content %}
+<h2>Product List</h2>
+{% if role == "manager" or role == "user" %}
+    <a class="btn btn-primary mb-3" href="{% url 'product_module:product_create' module.slug %}">
+        Create New Product
+    </a>
+{% endif %}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Barcode</th>
+            <th>Price</th>
+            <th>Stock</th>
+            {% if role == "manager" or role == "user" %}
+                <th>Actions</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.barcode }}</td>
+            <td>{{ product.price }}</td>
+            <td>{{ product.stock }}</td>
+            {% if role == "manager" or role == "user" %}
+                <td>
+                    <a class="btn btn-warning btn-sm" href="{% url 'product_module:product_update' module.slug product.pk %}">Edit</a>
+                    {% if role == "manager" %}
+                        <a class="btn btn-danger btn-sm" href="{% url 'product_module:product_delete' module.slug product.pk %}" onclick="return confirm('Are you sure to delete this data?');">Delete</a>
+                    {% endif %}
+                </td>
+            {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No products available.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

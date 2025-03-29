@@ -1,0 +1,48 @@
+{% extends 'engine/base.html' %}
+{% load custom_filters %}
+{% block content %}
+<h2>Daftar Modul</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Nama Modul</th>
+            <th>Slug</th>
+            <th>Global Version</th>
+            <th>Your Installed Version</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for mod in modules %}
+        <tr>
+            <td>{{ mod.name }}</td>
+            <td>{{ mod.slug }}</td>
+            <td>{{ mod.version }}</td>
+            <td>
+                {% with installed=user_installed|get_item:mod.slug %}
+                    {% if installed %}
+                        {{ installed.installed_version }}
+                    {% else %}
+                        Not Installed
+                    {% endif %}
+                {% endwith %}
+            </td>
+            <td>
+                {% with installed=user_installed|get_item:mod.slug %}
+                    {% if installed %}
+                        {% if installed.installed_version == mod.version %}
+                            <button class="btn btn-secondary" disabled>Upgrade</button>
+                        {% else %}
+                            <a class="btn btn-warning" href="{% url 'engine:upgrade_module' mod.slug %}">Upgrade</a>
+                        {% endif %}
+                        <a class="btn btn-danger" href="{% url 'engine:uninstall_module' mod.slug %}">Uninstall</a>
+                    {% else %}
+                        <a class="btn btn-primary" href="{% url 'engine:install_module' mod.slug %}">Install</a>
+                    {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'engine/base.html' %}
+{% block content %}
+<h2>Confirm Delete</h2>
+<p>Are you sure to delete this data? (Product: {{ product.name }})</p>
+<form method="POST" onsubmit="return confirm('Are you sure to delete this data?');">
+    {% csrf_token %}
+    <button class="btn btn-danger" type="submit">Yes, Delete</button>
+    <a class="btn btn-secondary" href="{% url 'product_module:product_list' module.slug %}">Cancel</a>
+</form>
+{% endblock %}
