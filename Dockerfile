@@ -1,38 +1,47 @@
 # syntax=docker/dockerfile:1
 FROM python:3.12-slim
 
-# Disable .pyc generation and enable unbuffered logging
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Prevent Python from writing .pyc files and enable unbuffered logging
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies (adjust if necessary for your project)
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        build-essential \
-        libpq-dev && \
-    rm -rf /var/lib/apt/lists/*
+# Install system dependencies for building native modules,
+# including pkg-config and MySQL client development libraries.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    pkg-config \
+    default-libmysqlclient-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements.txt and install Python dependencies
+# Copy the requirements file and install Python dependencies.
+# Your requirements.txt includes:
+# asgiref==3.8.1
+# Django==5.1.7
+# mysql-connector-python==9.2.0
+# mysqlclient==2.2.7
+# psycopg2-binary==2.9.10
+# sqlparse==0.5.3
 COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy the project code
+# Copy the project source code into the container.
 COPY . /app/
 
-# Ensure STATIC_ROOT directory exists (as defined in your settings.py)
+# Create the staticfiles directory (make sure STATIC_ROOT is defined in settings.py)
 RUN mkdir -p /app/staticfiles
 
-# Set the Django settings module (if needed)
+# Set the Django settings module environment variable.
 ENV DJANGO_SETTINGS_MODULE=modular_project.settings
 
-# Run collectstatic to gather all static files
+# Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Expose port 8080 (Cloud Run default)
+# Expose the port Cloud Run uses (8080)
 EXPOSE 8080
 
-# Use Gunicorn to serve the application
+# Use Gunicorn to serve the Django application.
 CMD ["gunicorn", "modular_project.wsgi:application", "--bind", "0.0.0.0:8080", "--workers", "3"]
