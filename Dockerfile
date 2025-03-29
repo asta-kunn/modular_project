@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # sqlparse==0.5.3
 COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install gunicorn
 
 # Copy the project source code into the container.
 COPY . /app/
